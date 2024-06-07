@@ -1,6 +1,6 @@
-import { db } from "@/db";
-import { notFound } from "next/navigation";
-import DesignConfigurator from "./DesignConfigurator";
+import { db } from '@/db'
+import { notFound } from 'next/navigation'
+import DesignConfigurator from './DesignConfigurator'
 
 interface PageProps {
   searchParams: {
@@ -23,7 +23,7 @@ const Page = async ({ searchParams }: PageProps) => {
     return notFound()
   }
 
-  const { imageUrl, width, height } = configuration;
+  const { imageUrl, width, height } = configuration
 
   return (
     <DesignConfigurator
@@ -31,6 +31,7 @@ const Page = async ({ searchParams }: PageProps) => {
       imageDimensions={{ width, height }}
       imageUrl={imageUrl}
     />
-  );
-};
-export default Page;
+  )
+}
+
+export default Page
