@@ -22,10 +22,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
 import { BASE_PRICE } from "@/config/products";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useToast } from "@/components/ui/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { saveConfig as _saveConfig, SaveConfigArgs } from "./actions";
+import { useRouter } from "next/navigation";
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -38,6 +41,24 @@ const DesignConfigurator = ({
   imageDimensions,
 }: DesignConfiguratorProps) => {
   const { toast } = useToast();
+  const router = useRouter();
+  
+  const { mutate: saveConfig, isPending } = useMutation({
+    mutationKey: ["save-config"],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)]);
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "There was an error on our end. Please try again.",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      router.push(`/configure/preview?id=${configId}`);
+    },
+  });
 
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
@@ -114,9 +135,10 @@ const DesignConfigurator = ({
     } catch (err) {
       toast({
         title: "something went wrong!",
-        description: "There was a problem building your case, please try again.",
-        variant: "destructive"
-      })
+        description:
+          "There was a problem building your case, please try again.",
+        variant: "destructive",
+      });
     }
 
     function base64ToBlob(base64: string, mimeType: string) {
@@ -366,7 +388,7 @@ const DesignConfigurator = ({
                     100
                 )}
               </p>
-              {/* <Button
+              <Button
                 isLoading={isPending}
                 disabled={isPending}
                 loadingText="Saving"
@@ -384,7 +406,7 @@ const DesignConfigurator = ({
               >
                 Continue
                 <ArrowRight className="h-4 w-4 ml-1.5 inline" />
-              </Button> */}
+              </Button>
             </div>
           </div>
         </div>
